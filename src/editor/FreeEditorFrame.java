@@ -5,19 +5,24 @@ import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Insets;
+import java.awt.Toolkit;
 
 import javax.swing.BoxLayout;
+import javax.swing.JDialog;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JTextArea;
+import javax.swing.KeyStroke;
 import javax.swing.border.BevelBorder;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
@@ -26,9 +31,17 @@ import javax.swing.event.UndoableEditListener;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.Date;
+
+import javax.swing.SwingConstants;
+
+import java.awt.Component;
 
 @SuppressWarnings("serial")
 final public class FreeEditorFrame extends JFrame implements FreeEditorControls
@@ -94,14 +107,20 @@ final public class FreeEditorFrame extends JFrame implements FreeEditorControls
 
 		JMenuItem mntmNew = new JMenuItem("New");
 		mntmNew.addActionListener(newFile);
+		mntmNew.setAccelerator(KeyStroke.getKeyStroke('N', Toolkit
+				.getDefaultToolkit().getMenuShortcutKeyMask()));
 		mnFile.add(mntmNew);
 
 		JMenuItem mntmOpen = new JMenuItem("Open...");
 		mntmOpen.addActionListener(open);
+		mntmOpen.setAccelerator(KeyStroke.getKeyStroke('O', Toolkit
+				.getDefaultToolkit().getMenuShortcutKeyMask()));
 		mnFile.add(mntmOpen);
 
 		JMenuItem mntmSave = new JMenuItem("Save");
 		mntmSave.addActionListener(save);
+		mntmSave.setAccelerator(KeyStroke.getKeyStroke('S', Toolkit
+				.getDefaultToolkit().getMenuShortcutKeyMask()));
 		mnFile.add(mntmSave);
 
 		JMenuItem mntmSaveAs = new JMenuItem("Save As...");
@@ -115,6 +134,8 @@ final public class FreeEditorFrame extends JFrame implements FreeEditorControls
 		mnFile.add(mntmPageSetup);
 
 		JMenuItem mntmPrint = new JMenuItem("Print...");
+		mntmPrint.setAccelerator(KeyStroke.getKeyStroke('P', Toolkit
+				.getDefaultToolkit().getMenuShortcutKeyMask()));
 		mntmPrint.addActionListener(print);
 		mnFile.add(mntmPrint);
 
@@ -131,52 +152,77 @@ final public class FreeEditorFrame extends JFrame implements FreeEditorControls
 		menuBar.add(mnEdit);
 
 		JMenuItem mntmUndo = new JMenuItem("Undo");
+		mntmUndo.setAccelerator(KeyStroke.getKeyStroke('Z', Toolkit
+				.getDefaultToolkit().getMenuShortcutKeyMask()));
 		mntmUndo.addActionListener(undo);
 		mnEdit.add(mntmUndo);
+		
+		JMenuItem mntmRedo = new JMenuItem("Redo");
+		mntmRedo.setAccelerator(KeyStroke.getKeyStroke('Y', Toolkit
+				.getDefaultToolkit().getMenuShortcutKeyMask()));
+		mntmRedo.addActionListener(redo);
+		mnEdit.add(mntmRedo);
 
 		mnEdit.add(new JSeparator());
 
 		JMenuItem mntmCut = new JMenuItem("Cut");
+		mntmCut.setAccelerator(KeyStroke.getKeyStroke('X', Toolkit
+				.getDefaultToolkit().getMenuShortcutKeyMask()));
 		mntmCut.addActionListener(cut);
 		mnEdit.add(mntmCut);
 
 		JMenuItem mntmCopy = new JMenuItem("Copy");
+		mntmCopy.setAccelerator(KeyStroke.getKeyStroke('C', Toolkit
+				.getDefaultToolkit().getMenuShortcutKeyMask()));
 		mntmCopy.addActionListener(copy);
 		mnEdit.add(mntmCopy);
 
 		JMenuItem mntmPaste = new JMenuItem("Paste");
+		mntmPaste.setAccelerator(KeyStroke.getKeyStroke('V', Toolkit
+				.getDefaultToolkit().getMenuShortcutKeyMask()));
 		mntmPaste.addActionListener(paste);
 		mnEdit.add(mntmPaste);
 
 		JMenuItem mntmDelete = new JMenuItem("Delete");
+		mntmDelete.setAccelerator(KeyStroke.getKeyStroke("DELETE"));
 		mntmDelete.addActionListener(delete);
 		mnEdit.add(mntmDelete);
 
 		mnEdit.add(new JSeparator());
 
 		JMenuItem mntmFind = new JMenuItem("Find...");
+		mntmFind.setAccelerator(KeyStroke.getKeyStroke('F', Toolkit
+				.getDefaultToolkit().getMenuShortcutKeyMask()));
 		mntmFind.addActionListener(find);
 		mnEdit.add(mntmFind);
 
 		JMenuItem mntmFindNext = new JMenuItem("Find Next");
+		mntmFindNext.setAccelerator(KeyStroke.getKeyStroke("F3"));
 		mntmFindNext.addActionListener(findNext);
 		mnEdit.add(mntmFindNext);
 
 		JMenuItem mntmReplace = new JMenuItem("Replace...");
+		mntmReplace.setAccelerator(KeyStroke.getKeyStroke('H', Toolkit
+				.getDefaultToolkit().getMenuShortcutKeyMask()));
 		mntmReplace.addActionListener(replace);
 		mnEdit.add(mntmReplace);
 
 		JMenuItem mntmGoTo = new JMenuItem("Go To...");
+		mntmGoTo.setAccelerator(KeyStroke.getKeyStroke('G', Toolkit
+				.getDefaultToolkit().getMenuShortcutKeyMask()));
 		mntmGoTo.addActionListener(goTo);
 		mnEdit.add(mntmGoTo);
 
 		mnEdit.add(new JSeparator());
 
 		JMenuItem mntmSelectAll = new JMenuItem("Select All");
+		mntmSelectAll.setAccelerator(KeyStroke.getKeyStroke('A', Toolkit
+				.getDefaultToolkit().getMenuShortcutKeyMask()));
 		mntmSelectAll.addActionListener(selectAll);
 		mnEdit.add(mntmSelectAll);
 
 		JMenuItem mntmTimeDate = new JMenuItem("Time/Date");
+		mntmTimeDate.setAccelerator(KeyStroke.getKeyStroke("F5"));
 		mntmTimeDate.addActionListener(timeDate);
 		mnEdit.add(mntmTimeDate);
 
@@ -223,31 +269,8 @@ final public class FreeEditorFrame extends JFrame implements FreeEditorControls
 		 */
 		textArea = new JTextArea();
 		textArea.setFont(new Font("Lucida Console", Font.PLAIN, 14));
-		textArea.setMargin(new Insets(1, 0, 0, 0));
-		textArea.addCaretListener(new CaretListener()
-		{
-			@Override
-			public void caretUpdate(CaretEvent e)
-			{
-				/**
-				 * @TODO implement columns based of text measurements
-				 */
-				documentChanged = true;
-				try
-				{
-					int position = textArea.getCaretPosition();
-					lineNumber = textArea.getLineOfOffset(position);
-					columnNumber = position - textArea.getLineStartOffset(lineNumber);
-					columnNumber += 1;
-					lineNumber += 1;
-				}
-				catch (Exception err)
-				{
-					err.printStackTrace();
-				}
-				updateStatusBar();
-			}
-		});
+		textArea.setMargin(new Insets(2, 2, 0, 0));
+		textArea.addCaretListener(caretUpdate);
 		textArea.getDocument().addUndoableEditListener(new UndoableEditListener()
 		{
 			
@@ -270,11 +293,12 @@ final public class FreeEditorFrame extends JFrame implements FreeEditorControls
 
 		statusPanel = new JPanel();
 		statusPanel.setVisible(false);
-		statusPanel.setLayout(new BoxLayout(statusPanel, BoxLayout.X_AXIS));
+		statusPanel.setLayout(new BorderLayout());
 		statusPanel.setBorder(new BevelBorder(BevelBorder.LOWERED));
 		statusPanel.setPreferredSize(new Dimension(getWidth(), 16));
 
 		lblStatusBar = new JLabel();
+		lblStatusBar.setHorizontalAlignment(SwingConstants.RIGHT);
 		updateStatusBar();
 		statusPanel.add(lblStatusBar);
 
@@ -285,9 +309,18 @@ final public class FreeEditorFrame extends JFrame implements FreeEditorControls
 	}
 
 	/*
-	 *  ActionListeners
+	 *  Listeners
 	 */
-	ActionListener newFile = new ActionListener()
+	private CaretListener caretUpdate = new CaretListener()
+	{
+		@Override
+		public void caretUpdate(CaretEvent e)
+		{
+			updateCaret();
+		}
+	};
+	
+	private ActionListener newFile = new ActionListener()
 	{
 		@Override
 		public void actionPerformed(ActionEvent e)
@@ -356,6 +389,15 @@ final public class FreeEditorFrame extends JFrame implements FreeEditorControls
 		public void actionPerformed(ActionEvent e)
 		{
 			undo();
+		}
+	};
+	
+	private ActionListener redo = new ActionListener()
+	{
+		@Override
+		public void actionPerformed(ActionEvent e)
+		{
+			redo();
 		}
 	};
 
@@ -501,11 +543,18 @@ final public class FreeEditorFrame extends JFrame implements FreeEditorControls
 	@Override
 	public void newFile()
 	{
+		textArea.setText("");
+		currentFile = new File("Untitled");
+		updateTitle();
 	}
 
 	@Override
 	public void open()
 	{
+		JFileChooser fileDialog = new JFileChooser();
+		fileDialog.showOpenDialog(this);
+		currentFile = fileDialog.getSelectedFile();
+		openCurrentFile();
 	}
 
 	@Override
@@ -537,27 +586,37 @@ final public class FreeEditorFrame extends JFrame implements FreeEditorControls
 	@Override
 	public void undo()
 	{
+		
+	}
+	
+	@Override
+	public void redo()
+	{
+		
 	}
 
 	@Override
 	public void cut()
 	{
+		textArea.cut();
 	}
 
 	@Override
 	public void copy()
 	{
+		textArea.copy();
 	}
 
 	@Override
 	public void paste()
 	{
+		textArea.paste();
 	}
 
 	@Override
-	public void delete() throws NullPointerException
+	public void delete()
 	{
-		textArea.setText(textArea.getText().replace(textArea.getSelectedText(), ""));
+		textArea.replaceSelection("");
 	}
 
 	@Override
@@ -578,6 +637,18 @@ final public class FreeEditorFrame extends JFrame implements FreeEditorControls
 	@Override
 	public void goTo()
 	{
+		String returnVal = (String) JOptionPane.showInputDialog(this, "Line Number:", "Go To Line", JOptionPane.PLAIN_MESSAGE, null, null, 1);
+		if (returnVal != null)
+		{
+			try
+			{
+				int line = Integer.parseInt(returnVal);
+			}
+			catch (NumberFormatException nfe)
+			{
+				System.err.println("Error: goTo() - line number must be an integer.");
+			}
+		}
 	}
 
 	@Override
@@ -633,6 +704,28 @@ final public class FreeEditorFrame extends JFrame implements FreeEditorControls
 	/*
 	 *  Private Methods
 	 */
+	
+	private void openCurrentFile()
+	{
+		if (currentFile != null)
+		{
+			try
+			{
+				FileReader r = new FileReader(currentFile);
+				textArea.read(r, null);
+				updateTitle();
+			}
+			catch (FileNotFoundException e)
+			{
+				e.printStackTrace();
+			}
+			catch (IOException e)
+			{
+				e.printStackTrace();
+			}
+		}
+	}
+	
 	private void setWordWrapEnabled(boolean enabled)
 	{
 		if (enabled)
@@ -650,9 +743,35 @@ final public class FreeEditorFrame extends JFrame implements FreeEditorControls
 	{
 		statusPanel.setVisible(enabled);
 	}
-
+	
+	private void updateCaret()
+	{
+		/**
+		 * @TODO implement columns based of text measurements
+		 */
+		documentChanged = true;
+		try
+		{
+			int position = textArea.getCaretPosition();
+			lineNumber = textArea.getLineOfOffset(position);
+			columnNumber = position - textArea.getLineStartOffset(lineNumber);
+			columnNumber += 1;
+			lineNumber += 1;
+		}
+		catch (Exception err)
+		{
+			err.printStackTrace();
+		}
+		updateStatusBar();
+	}
+	
 	private void updateStatusBar()
 	{
 		lblStatusBar.setText("Line " + lineNumber + ", Col " + columnNumber);
+	}
+	
+	private void updateTitle()
+	{
+		setTitle("FreeEditor - " + currentFile.getName());
 	}
 } // FreeEditorFrame class

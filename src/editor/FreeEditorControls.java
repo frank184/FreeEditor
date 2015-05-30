@@ -13,6 +13,7 @@ public abstract interface FreeEditorControls
 	
 	// Edit Menu
 	public abstract void undo();
+	public abstract void redo();
 	public abstract void cut();
 	public abstract void copy();
 	public abstract void paste();

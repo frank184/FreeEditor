@@ -3,8 +3,6 @@ package editor;
 
 import javax.swing.JDialog;
 import javax.swing.JScrollPane;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -32,14 +30,6 @@ public class FreeEditorHelp extends JDialog
 	
 	private void init()
 	{
-		try
-		{
-			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		}
-		catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e)
-		{
-			e.printStackTrace();
-		}
 		setTitle("FreeEditor - Help");
 		setBounds(100, 100, 575, 547);
 		setLocationRelativeTo(null);

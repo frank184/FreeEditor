@@ -4,8 +4,6 @@ package editor;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 
 import java.awt.Font;
 import java.awt.SystemColor;
@@ -50,14 +48,7 @@ public class FreeEditorSaveChanges extends JDialog implements ActionListener
 		
 	private void init()
 	{
-		try
-		{
-			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		}
-		catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e)
-		{
-			e.printStackTrace();
-		}
+
 		setTitle("FreeEditor");
 		setBounds(100, 100, 400, 150);
 		setLocationRelativeTo(null);

@@ -7,8 +7,6 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
 import javax.swing.JTextArea;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 
 import java.awt.Font;
 
@@ -35,14 +33,6 @@ public class FreeEditorAbout extends JDialog
 	
 	private void init()
 	{
-		try
-		{
-			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		}
-		catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e)
-		{
-			e.printStackTrace();
-		}
 		setTitle("FreeEditor - About");
 		setBounds(100, 100, 301, 250);
 		setLocationRelativeTo(null);

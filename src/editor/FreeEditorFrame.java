@@ -30,6 +30,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
+import javax.swing.text.Element;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -355,9 +356,8 @@ final public class FreeEditorFrame extends JFrame implements FreeEditorControls
 		lblStatusBar.setHorizontalAlignment(SwingConstants.RIGHT);
 		updateStatusBar();
 		statusPanel.add(lblStatusBar);
-
 		getContentPane().add(statusPanel, BorderLayout.SOUTH);
-
+		
 		loadLastFile();
 	}
 
@@ -711,11 +711,13 @@ final public class FreeEditorFrame extends JFrame implements FreeEditorControls
 	@Override
 	public void undo()
 	{
+		
 	}
 
 	@Override
 	public void redo()
 	{
+		
 	}
 
 	@Override
@@ -745,16 +747,19 @@ final public class FreeEditorFrame extends JFrame implements FreeEditorControls
 	@Override
 	public void find()
 	{
+		
 	}
 
 	@Override
 	public void findNext()
 	{
+		
 	}
 
 	@Override
 	public void replace()
 	{
+		
 	}
 
 	@Override
@@ -767,6 +772,11 @@ final public class FreeEditorFrame extends JFrame implements FreeEditorControls
 			try
 			{
 				int line = Integer.parseInt(returnVal);
+				Element root = textArea.getDocument().getDefaultRootElement();
+				line = Math.max(line, 1);
+				line = Math.min(line, root.getElementCount());
+				int startOfLineOffset = root.getElement(line - 1).getStartOffset();
+				textArea.setCaretPosition(startOfLineOffset);
 			}
 			catch (NumberFormatException nfe)
 			{
@@ -784,8 +794,9 @@ final public class FreeEditorFrame extends JFrame implements FreeEditorControls
 	@Override
 	public void timeDate()
 	{
+		
 		Date date = new Date();
-		textArea.append(date.toString());
+		textArea.insert(date.toString(), textArea.getCaretPosition());
 	}
 
 	@Override

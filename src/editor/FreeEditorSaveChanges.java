@@ -50,7 +50,7 @@ public class FreeEditorSaveChanges extends JDialog implements ActionListener
 	{
 
 		setTitle("FreeEditor");
-		setBounds(100, 100, 400, 150);
+		setBounds(100, 100, 350, 150);
 		setLocationRelativeTo(null);
 		setModal(true);
 		getContentPane().setLayout(null);
@@ -73,22 +73,22 @@ public class FreeEditorSaveChanges extends JDialog implements ActionListener
 		lblText.setVerticalAlignment(SwingConstants.TOP);
 		lblText.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		lblText.setForeground(new Color(0, 0, 205));
-		lblText.setBounds(10, 11, 364, 45);
+		lblText.setBounds(10, 11, 312, 45);
 		textPanel.add(lblText);
 		
 		btnCancel = new JButton("Cancel");
 		btnCancel.addActionListener(this);
-		btnCancel.setBounds(291, 78, 83, 23);
+		btnCancel.setBounds(241, 78, 83, 23);
 		getContentPane().add(btnCancel);
 		
 		btnDontSave = new JButton("Don't Save");
 		btnDontSave.addActionListener(this);
-		btnDontSave.setBounds(184, 78, 97, 23);
+		btnDontSave.setBounds(134, 78, 97, 23);
 		getContentPane().add(btnDontSave);
 		
 		btnSave = new JButton("Save");
 		btnSave.addActionListener(this);
-		btnSave.setBounds(103, 78, 71, 23);
+		btnSave.setBounds(53, 78, 71, 23);
 		getContentPane().add(btnSave);
 	}
 

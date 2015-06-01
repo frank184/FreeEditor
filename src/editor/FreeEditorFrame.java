@@ -21,8 +21,6 @@ import javax.swing.JSeparator;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.BevelBorder;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
@@ -33,7 +31,6 @@ import javax.swing.event.UndoableEditListener;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -41,31 +38,18 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Date;
-import java.util.Scanner;
 
 import javax.swing.SwingConstants;
 
 @SuppressWarnings("serial")
 final public class FreeEditorFrame extends JFrame implements FreeEditorControls
 {
-	/*
-	 * Constants
-	 */
-	private static final File DEFAULT_FILE = new File("Untitled");
-	private final File LAST_FILE = new File("lastFile");
-
-	/*
-	 * Document instances
-	 */
-	private File currentFile;
-	private boolean currentFileIsDefault;
-	private boolean documentTextSelected;
-	private boolean documentChanged;
-	private boolean documentEmpty;
-
 	private int lineNumber = 1;
 	private int columnNumber = 1;
 
+	private boolean documentChanged;
+	private File currentFile;
+	
 	/*
 	 *  Global Components
 	 */
@@ -73,11 +57,14 @@ final public class FreeEditorFrame extends JFrame implements FreeEditorControls
 	private JScrollPane jsp;
 	private JPanel statusPanel;
 	private JLabel lblStatusBar;
-
+	
+	/*
+	 *  Global Menu Items
+	 */
 	// File
 	private JMenuItem mntmSave;
 	private JMenuItem mntmSaveAs;
-
+	
 	// Edit
 	private JMenuItem mntmUndo;
 	private JMenuItem mntmRedo;
@@ -88,10 +75,10 @@ final public class FreeEditorFrame extends JFrame implements FreeEditorControls
 	private JMenuItem mntmFind;
 	private JMenuItem mntmFindNext;
 	private JMenuItem mntmReplace;
-
+	
 	// Format
 	private JCheckBoxMenuItem chckbxmntmWordWrap;
-
+	
 	// View
 	private JCheckBoxMenuItem chckbxmntmStatusBar;
 
@@ -123,19 +110,10 @@ final public class FreeEditorFrame extends JFrame implements FreeEditorControls
 	public FreeEditorFrame()
 	{
 		super("FreeEditor");
-		try
-		{
-			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		}
-		catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e)
-		{
-			e.printStackTrace();
-		}
 		setBounds(100, 100, 450, 300);
 		setLocationRelativeTo(null);
 		getContentPane().setLayout(new BorderLayout());
-		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-		addWindowListener(windowAdapter);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		JMenuBar menuBar = new JMenuBar();
 		setJMenuBar(menuBar);
@@ -169,7 +147,8 @@ final public class FreeEditorFrame extends JFrame implements FreeEditorControls
 		mnFile.add(mntmSave);
 
 		mntmSaveAs = new JMenuItem("Save As...");
-		mntmSaveAs.addActionListener(saveAs);
+		mntmSaveAs.setEnabled(false);
+		mntmSave.addActionListener(saveAs);
 		mnFile.add(mntmSaveAs);
 
 		mnFile.add(new JSeparator());
@@ -227,6 +206,7 @@ final public class FreeEditorFrame extends JFrame implements FreeEditorControls
 		mnEdit.add(mntmCopy);
 
 		mntmPaste = new JMenuItem("Paste");
+		mntmPaste.setEnabled(false);
 		mntmPaste.setAccelerator(KeyStroke.getKeyStroke('V', Toolkit
 				.getDefaultToolkit().getMenuShortcutKeyMask()));
 		mntmPaste.addActionListener(paste);
@@ -358,21 +338,14 @@ final public class FreeEditorFrame extends JFrame implements FreeEditorControls
 
 		getContentPane().add(statusPanel, BorderLayout.SOUTH);
 
-		loadLastFile();
+		currentFile = new File("Untitled");
+		updateTitle();
 	}
 
 	/*
 	 *  Listeners
 	 */
-	private WindowAdapter windowAdapter = new WindowAdapter()
-	{
-		@Override
-		public void windowClosing(WindowEvent e)
-		{
-			exit();
-		}
-	};
-
+	
 	private DocumentListener documentUpdate = new DocumentListener()
 	{
 		@Override
@@ -393,7 +366,7 @@ final public class FreeEditorFrame extends JFrame implements FreeEditorControls
 			documentUpdate();
 		}
 	};
-
+	
 	private CaretListener caretUpdate = new CaretListener()
 	{
 		@Override
@@ -627,49 +600,31 @@ final public class FreeEditorFrame extends JFrame implements FreeEditorControls
 	public void newFile()
 	{
 		textArea.setText("");
-		setDefaultFile();
+		currentFile = new File("Untitled");
+		
+		documentChanged = false;
+		documentUpdateSetEnabled(false);
+		updateTitle();
 	}
 
 	@Override
 	public void open()
 	{
-		JFileChooser openDialog = new JFileChooser();
-		openDialog.showOpenDialog(this);
-		currentFile = openDialog.getSelectedFile();
+		JFileChooser fileDialog = new JFileChooser();
+		fileDialog.showOpenDialog(this);
+		currentFile = fileDialog.getSelectedFile();
 		openCurrentFile();
 	}
 
 	@Override
 	public void save()
 	{
-		if (currentFile != null)
-		{
-			if (currentFile.exists())
-			{
-				saveCurrentFile();
-			}
-			else
-			{
-				saveAs();
-			}
-		}
-		else
-		{
-			saveAs();
-		}
+		saveCurrentFile();
 	}
 
 	@Override
 	public void saveAs()
 	{
-		JFileChooser saveAsDialog = new JFileChooser("Save As");
-		saveAsDialog.showDialog(this, "Save As");
-		File selectedFile = saveAsDialog.getSelectedFile();
-		if (selectedFile != null)
-		{
-			currentFile = selectedFile;
-			saveCurrentFile();
-		}
 	}
 
 	@Override
@@ -685,37 +640,19 @@ final public class FreeEditorFrame extends JFrame implements FreeEditorControls
 	@Override
 	public void exit()
 	{
-		if (documentChanged)
-		{
-			FreeEditorSaveChanges saveChangesDialog = new FreeEditorSaveChanges(this);
-			int val = saveChangesDialog.showDialog();
-			switch (val)
-			{
-			case FreeEditorSaveChanges.DONT_SAVE:
-				writeLastFile();
-				System.exit(0);
-				break;
-			case FreeEditorSaveChanges.SAVE:
-				save();
-				writeLastFile();
-				System.exit(0);
-				break;
-			}
-		}
-		else
-		{
-			System.exit(0);
-		}
+		dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
 	}
 
 	@Override
 	public void undo()
 	{
+
 	}
 
 	@Override
 	public void redo()
 	{
+
 	}
 
 	@Override
@@ -791,7 +728,7 @@ final public class FreeEditorFrame extends JFrame implements FreeEditorControls
 	@Override
 	public void wordWrap()
 	{
-		setWordWrapTrigger(chckbxmntmWordWrap.getState());
+		setWordWrapEnabled(chckbxmntmWordWrap.getState());
 	}
 
 	@Override
@@ -808,20 +745,20 @@ final public class FreeEditorFrame extends JFrame implements FreeEditorControls
 	@Override
 	public void statusBar()
 	{
-		setStatusBarSetVisible(chckbxmntmStatusBar.getState());
+		setStatusBarEnabled(chckbxmntmStatusBar.getState());
 	}
 
 	@Override
 	public void viewHelp()
 	{
-		FreeEditorHelp helpDialog = new FreeEditorHelp(this);
+		FreeEditorHelp helpDialog = new FreeEditorHelp();
 		helpDialog.setVisible(true);
 	}
 
 	@Override
 	public void viewAbout()
 	{
-		FreeEditorAbout aboutDialog = new FreeEditorAbout(this);
+		FreeEditorAbout aboutDialog = new FreeEditorAbout();
 		aboutDialog.setVisible(true);
 	}
 
@@ -837,12 +774,11 @@ final public class FreeEditorFrame extends JFrame implements FreeEditorControls
 				FileReader r = new FileReader(currentFile);
 				textArea.setText("");
 				textArea.read(r, null);
-				r.close();
-
-				setDocumentListener();
-				setDocumentChanged(false);
-				setDocumentEmpty();
-				printStuff();
+				
+				textArea.getDocument().addDocumentListener(documentUpdate);
+				documentChanged = false;
+				documentUpdateSetEnabled(false);
+				updateTitle();
 			}
 			catch (FileNotFoundException e)
 			{
@@ -857,17 +793,16 @@ final public class FreeEditorFrame extends JFrame implements FreeEditorControls
 
 	private void saveCurrentFile()
 	{
-		if (documentChanged && currentFile != null)
+		if (currentFile != null && documentChanged)
 		{
 			try
 			{
 				FileWriter w = new FileWriter(currentFile);
 				textArea.write(w);
-				w.close();
-
-				setDocumentChanged(false);
-				setDocumentEmpty();
-				printStuff();
+				
+				documentChanged = false;
+				documentUpdateSetEnabled(false);
+				updateTitle();
 			}
 			catch (FileNotFoundException e)
 			{
@@ -880,62 +815,7 @@ final public class FreeEditorFrame extends JFrame implements FreeEditorControls
 		}
 	}
 
-	private void setDefaultFile()
-	{
-		currentFile = DEFAULT_FILE;
-		currentFileIsDefault = true;
-		setDocumentEmpty();
-		setDocumentChanged(false);
-		printStuff();
-	}
-
-	private void loadLastFile()
-	{
-		Scanner r = null;
-
-		try
-		{
-			r = new Scanner(LAST_FILE);
-			if (r.hasNextLine())
-			{
-				currentFile = new File(r.nextLine());
-				openCurrentFile();
-			}
-			else
-			{
-				r.close();
-				throw new FileNotFoundException();
-			}
-			r.close();
-		}
-		catch (FileNotFoundException e)
-		{
-			setDefaultFile();
-		}
-	}
-
-	private void writeLastFile()
-	{
-		if (!currentFile.equals(DEFAULT_FILE))
-		{
-			try
-			{
-				FileWriter w = new FileWriter(LAST_FILE);
-				w.write(currentFile.getAbsolutePath());
-				w.close();
-			}
-			catch (FileNotFoundException e)
-			{
-				e.printStackTrace();
-			}
-			catch (IOException e)
-			{
-				e.printStackTrace();
-			}
-		}
-	}
-
-	private void setWordWrapTrigger(boolean enabled)
+	private void setWordWrapEnabled(boolean enabled)
 	{
 		if (enabled)
 		{
@@ -946,21 +826,23 @@ final public class FreeEditorFrame extends JFrame implements FreeEditorControls
 			jsp.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 		}
 		textArea.setLineWrap(enabled);
-		textArea.setWrapStyleWord(enabled);
 	}
 
-	private void setStatusBarSetVisible(boolean enabled)
+	private void setStatusBarEnabled(boolean enabled)
 	{
 		statusPanel.setVisible(enabled);
 	}
-
+	
 	private void documentUpdate()
 	{
-		setDocumentChanged(true);
-		setDocumentEmpty();
-		printStuff();
+		if (!documentChanged)
+		{
+			documentChanged = true;
+			documentUpdateSetEnabled(true);
+			updateTitle();
+		}
 	}
-
+	
 	private void updateCaret()
 	{
 		try
@@ -970,17 +852,20 @@ final public class FreeEditorFrame extends JFrame implements FreeEditorControls
 			columnNumber = position - textArea.getLineStartOffset(lineNumber);
 			columnNumber += 1;
 			lineNumber += 1;
-			updateStatusBar();
 		}
 		catch (Exception err)
 		{
 			err.printStackTrace();
 		}
-
-		setDocumentTextSelected();
-		setDocumentEmpty();
-
-		printStuff();
+		updateStatusBar();
+		if (textArea.getSelectedText() != null)
+		{
+			textSelectionSetEnabled(true);
+		}
+		else
+		{
+			textSelectionSetEnabled(false);
+		}
 	}
 
 	private void updateStatusBar()
@@ -999,84 +884,23 @@ final public class FreeEditorFrame extends JFrame implements FreeEditorControls
 			setTitle(currentFile.getName() + " - FreeEditor");
 		}
 	}
-
-	private void setDocumentListener()
-	{
-		textArea.getDocument().addDocumentListener(documentUpdate);
-	}
-
-	private void setDocumentChanged(boolean enabled)
-	{
-		documentChanged = enabled;
-		documentUpdateSetEnabled(enabled);
-		updateTitle();
-	}
-
-	private void setDocumentEmpty()
-	{
-		if (textArea.getText().isEmpty())
-		{
-			documentEmpty = true;
-			documentEmptySetEnabled(false);
-			if (currentFileIsDefault)
-			{
-				setDocumentChanged(false);
-			}
-		}
-		else
-		{
-			documentEmpty = false;
-			documentEmptySetEnabled(true);
-		}
-	}
-
-	private void setDocumentTextSelected()
-	{
-		if (textArea.getSelectedText() != null)
-		{
-			documentTextSelected = true;
-			textSelectedSetEnabled(true);
-		}
-		else
-		{
-			documentTextSelected = false;
-			textSelectedSetEnabled(false);
-		}
-	}
-
-	private void textSelectedSetEnabled(boolean enabled)
+	
+	private void textSelectionSetEnabled(boolean enabled)
 	{
 		mntmCut.setEnabled(enabled);
 		mntmCopy.setEnabled(enabled);
+		mntmPaste.setEnabled(enabled);
 		mntmDelete.setEnabled(enabled);
-	}
-
-	private void documentUpdateSetEnabled(boolean enabled)
-	{
-		mntmSave.setEnabled(enabled);
-		mntmUndo.setEnabled(enabled);
-		mntmRedo.setEnabled(enabled);
-	}
-
-	private void documentEmptySetEnabled(boolean enabled)
-	{
 		mntmFind.setEnabled(enabled);
 		mntmFindNext.setEnabled(enabled);
 		mntmReplace.setEnabled(enabled);
 	}
 	
-	private void printStuff()
+	private void documentUpdateSetEnabled(boolean enabled)
 	{
-		System.out.println("currentFile: " + currentFile);
-		System.out.println("currentFileIsDefault: " + currentFileIsDefault);
-		System.out.println("documentEmpty: " + documentEmpty);
-		System.out.println("documentChanged: " + documentChanged);
-		System.out.println("documentTextSelected: " + documentTextSelected);
-		System.out.println();
-	}
-	
-	public String getCurrentFile()
-	{
-		return currentFile.getName();
+		mntmSave.setEnabled(enabled);
+		mntmSaveAs.setEnabled(enabled);
+		mntmUndo.setEnabled(enabled);
+		mntmRedo.setEnabled(enabled);
 	}
 } // FreeEditorFrame class

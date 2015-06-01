@@ -1,4 +1,0 @@
-grant CodeBase "FreeEditor.jar"
-{
-    permission java.security.AllPermission;
-};

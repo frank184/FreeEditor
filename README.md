@@ -1,6 +1,6 @@
 # FreeEditor
 ## Overview
-A small text editor project.
+A small text editor project. Download the .jar file to try it out!
 
 ## ToDo
 - documentChanged, waiting for undo/redo

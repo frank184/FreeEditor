@@ -31,6 +31,7 @@ public class FreeEditorHelp extends JDialog
 	private void init()
 	{
 		setTitle("FreeEditor - Help");
+		setModal(true);
 		setBounds(100, 100, 575, 547);
 		setLocationRelativeTo(null);
 		setLayout(new BorderLayout());

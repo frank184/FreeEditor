@@ -36,14 +36,8 @@ public class FreeEditorFind extends JDialog
 	 */
 	public FreeEditorFind()
 	{
-		try
-		{
-			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		}
-		catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e)
-		{
-			e.printStackTrace();
-		}
+		setTitle("Find");
+		setModal(true);
 		setBounds(100, 100, 350, 157);
 		getContentPane().setLayout(null);
 		
@@ -66,19 +60,19 @@ public class FreeEditorFind extends JDialog
 		textField_1.setColumns(10);
 		
 		JButton btnNewButton = new JButton("Find Next");
-		btnNewButton.setBounds(221, 11, 103, 23);
+		btnNewButton.setBounds(221, 5, 103, 23);
 		getContentPane().add(btnNewButton);
 		
 		JButton btnNewButton_1 = new JButton("Replace");
-		btnNewButton_1.setBounds(221, 35, 103, 23);
+		btnNewButton_1.setBounds(221, 33, 103, 23);
 		getContentPane().add(btnNewButton_1);
 		
 		JButton btnNewButton_2 = new JButton("Replace All");
-		btnNewButton_2.setBounds(221, 59, 103, 23);
+		btnNewButton_2.setBounds(221, 61, 103, 23);
 		getContentPane().add(btnNewButton_2);
 		
 		JButton btnNewButton_3 = new JButton("Cancel");
-		btnNewButton_3.setBounds(221, 85, 103, 23);
+		btnNewButton_3.setBounds(221, 89, 103, 23);
 		getContentPane().add(btnNewButton_3);
 		
 		JCheckBox chckbxMatchCase = new JCheckBox("Match case");

@@ -81,14 +81,23 @@ final public class FreeEditorFrame extends JFrame implements FreeEditorControls
 
 	// Edit
 	private JMenuItem mntmUndo;
+	private JMenuItem mntmUndoPopup;
 	private JMenuItem mntmRedo;
+	private JMenuItem mntmRedoPopup;
 	private JMenuItem mntmCut;
+	private JMenuItem mntmCutPopup;
 	private JMenuItem mntmCopy;
+	private JMenuItem mntmCopyPopup;
 	private JMenuItem mntmPaste;
+	private JMenuItem mntmPastePopup;
 	private JMenuItem mntmDelete;
+	private JMenuItem mntmDeletePopup;
 	private JMenuItem mntmFind;
+	private JMenuItem mntmFindPopup;
 	private JMenuItem mntmFindNext;
+	private JMenuItem mntmFindNextPopup;
 	private JMenuItem mntmReplace;
+	private JMenuItem mntmReplacePopup;
 
 	// Format
 	private JCheckBoxMenuItem chckbxmntmWordWrap;
@@ -128,7 +137,8 @@ final public class FreeEditorFrame extends JFrame implements FreeEditorControls
 		{
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		}
-		catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e)
+		catch (ClassNotFoundException | InstantiationException
+				| IllegalAccessException | UnsupportedLookAndFeelException e)
 		{
 			e.printStackTrace();
 		}
@@ -142,7 +152,6 @@ final public class FreeEditorFrame extends JFrame implements FreeEditorControls
 		setJMenuBar(menuBar);
 
 		JPopupMenu popupMenu = new JPopupMenu();
-		getContentPane().add(popupMenu);
 
 		/*
 		 *  File Menu & Menu Items
@@ -203,6 +212,13 @@ final public class FreeEditorFrame extends JFrame implements FreeEditorControls
 				.getDefaultToolkit().getMenuShortcutKeyMask()));
 		mntmUndo.addActionListener(undo);
 		mnEdit.add(mntmUndo);
+		// Clone for JPopupMenu
+		mntmUndoPopup = new JMenuItem("Undo");
+		mntmUndoPopup.setEnabled(false);
+		mntmUndoPopup.setAccelerator(KeyStroke.getKeyStroke('Z', Toolkit
+				.getDefaultToolkit().getMenuShortcutKeyMask()));
+		mntmUndoPopup.addActionListener(undo);
+		popupMenu.add(mntmUndoPopup);
 
 		mntmRedo = new JMenuItem("Redo");
 		mntmRedo.setEnabled(false);
@@ -210,8 +226,16 @@ final public class FreeEditorFrame extends JFrame implements FreeEditorControls
 				.getDefaultToolkit().getMenuShortcutKeyMask()));
 		mntmRedo.addActionListener(redo);
 		mnEdit.add(mntmRedo);
+		// Clone for JPopupMenu
+		mntmRedoPopup = new JMenuItem("Redo");
+		mntmRedoPopup.setEnabled(false);
+		mntmRedoPopup.setAccelerator(KeyStroke.getKeyStroke('Y', Toolkit
+				.getDefaultToolkit().getMenuShortcutKeyMask()));
+		mntmRedoPopup.addActionListener(redo);
+		popupMenu.add(mntmRedoPopup);
 
 		mnEdit.add(new JSeparator());
+		popupMenu.add(new JSeparator());
 
 		mntmCut = new JMenuItem("Cut");
 		mntmCut.setEnabled(false);
@@ -219,6 +243,13 @@ final public class FreeEditorFrame extends JFrame implements FreeEditorControls
 				.getDefaultToolkit().getMenuShortcutKeyMask()));
 		mntmCut.addActionListener(cut);
 		mnEdit.add(mntmCut);
+		// Clone for JPopupMenu
+		mntmCutPopup = new JMenuItem("Cut");
+		mntmCutPopup.setEnabled(false);
+		mntmCutPopup.setAccelerator(KeyStroke.getKeyStroke('X', Toolkit
+				.getDefaultToolkit().getMenuShortcutKeyMask()));
+		mntmCutPopup.addActionListener(cut);
+		popupMenu.add(mntmCutPopup);
 
 		mntmCopy = new JMenuItem("Copy");
 		mntmCopy.setEnabled(false);
@@ -226,20 +257,40 @@ final public class FreeEditorFrame extends JFrame implements FreeEditorControls
 				.getDefaultToolkit().getMenuShortcutKeyMask()));
 		mntmCopy.addActionListener(copy);
 		mnEdit.add(mntmCopy);
+		// Clone for JPopupMenu
+		mntmCopyPopup = new JMenuItem("Copy");
+		mntmCopyPopup.setEnabled(false);
+		mntmCopyPopup.setAccelerator(KeyStroke.getKeyStroke('C', Toolkit
+				.getDefaultToolkit().getMenuShortcutKeyMask()));
+		mntmCopyPopup.addActionListener(copy);
+		popupMenu.add(mntmCopyPopup);
 
 		mntmPaste = new JMenuItem("Paste");
 		mntmPaste.setAccelerator(KeyStroke.getKeyStroke('V', Toolkit
 				.getDefaultToolkit().getMenuShortcutKeyMask()));
 		mntmPaste.addActionListener(paste);
 		mnEdit.add(mntmPaste);
+		// Clone for JPopupMenu
+		mntmPastePopup = new JMenuItem("Paste");
+		mntmPastePopup.setAccelerator(KeyStroke.getKeyStroke('V', Toolkit
+				.getDefaultToolkit().getMenuShortcutKeyMask()));
+		mntmPastePopup.addActionListener(paste);
+		popupMenu.add(mntmPastePopup);
 
 		mntmDelete = new JMenuItem("Delete");
 		mntmDelete.setEnabled(false);
 		mntmDelete.setAccelerator(KeyStroke.getKeyStroke("DELETE"));
 		mntmDelete.addActionListener(delete);
 		mnEdit.add(mntmDelete);
+		// Clone for JPopupMenu
+		mntmDeletePopup = new JMenuItem("Delete");
+		mntmDeletePopup.setEnabled(false);
+		mntmDeletePopup.setAccelerator(KeyStroke.getKeyStroke("DELETE"));
+		mntmDeletePopup.addActionListener(delete);
+		popupMenu.add(mntmDeletePopup);
 
 		mnEdit.add(new JSeparator());
+		popupMenu.add(new JSeparator());
 
 		mntmFind = new JMenuItem("Find...");
 		mntmFind.setEnabled(false);
@@ -247,12 +298,25 @@ final public class FreeEditorFrame extends JFrame implements FreeEditorControls
 				.getDefaultToolkit().getMenuShortcutKeyMask()));
 		mntmFind.addActionListener(find);
 		mnEdit.add(mntmFind);
+		// Clone for JPopupMenu
+		mntmFindPopup = new JMenuItem("Find...");
+		mntmFindPopup.setEnabled(false);
+		mntmFindPopup.setAccelerator(KeyStroke.getKeyStroke('F', Toolkit
+				.getDefaultToolkit().getMenuShortcutKeyMask()));
+		mntmFindPopup.addActionListener(find);
+		popupMenu.add(mntmFindPopup);
 
 		mntmFindNext = new JMenuItem("Find Next");
 		mntmFindNext.setEnabled(false);
 		mntmFindNext.setAccelerator(KeyStroke.getKeyStroke("F3"));
 		mntmFindNext.addActionListener(findNext);
 		mnEdit.add(mntmFindNext);
+		// Clone for JPopupMenu
+		mntmFindNextPopup = new JMenuItem("Find Next");
+		mntmFindNextPopup.setEnabled(false);
+		mntmFindNextPopup.setAccelerator(KeyStroke.getKeyStroke("F3"));
+		mntmFindNextPopup.addActionListener(findNext);
+		popupMenu.add(mntmFindNextPopup);
 
 		mntmReplace = new JMenuItem("Replace...");
 		mntmReplace.setEnabled(false);
@@ -260,25 +324,50 @@ final public class FreeEditorFrame extends JFrame implements FreeEditorControls
 				.getDefaultToolkit().getMenuShortcutKeyMask()));
 		mntmReplace.addActionListener(replace);
 		mnEdit.add(mntmReplace);
+		// Clone for JPopupMenu
+		mntmReplacePopup = new JMenuItem("Replace...");
+		mntmReplacePopup.setEnabled(false);
+		mntmReplacePopup.setAccelerator(KeyStroke.getKeyStroke('H', Toolkit
+				.getDefaultToolkit().getMenuShortcutKeyMask()));
+		mntmReplacePopup.addActionListener(replace);
+		popupMenu.add(mntmReplacePopup);
 
 		JMenuItem mntmGoTo = new JMenuItem("Go To...");
 		mntmGoTo.setAccelerator(KeyStroke.getKeyStroke('G', Toolkit
 				.getDefaultToolkit().getMenuShortcutKeyMask()));
 		mntmGoTo.addActionListener(goTo);
 		mnEdit.add(mntmGoTo);
+		// Clone for JPopupMenu
+		JMenuItem mntmGoToPopup = new JMenuItem("Go To...");
+		mntmGoToPopup.setAccelerator(KeyStroke.getKeyStroke('G', Toolkit
+				.getDefaultToolkit().getMenuShortcutKeyMask()));
+		mntmGoToPopup.addActionListener(goTo);
+		popupMenu.add(mntmGoToPopup);
 
 		mnEdit.add(new JSeparator());
+		popupMenu.add(new JSeparator());
 
 		JMenuItem mntmSelectAll = new JMenuItem("Select All");
 		mntmSelectAll.setAccelerator(KeyStroke.getKeyStroke('A', Toolkit
 				.getDefaultToolkit().getMenuShortcutKeyMask()));
 		mntmSelectAll.addActionListener(selectAll);
 		mnEdit.add(mntmSelectAll);
+	// Clone for JPopupMenu
+		JMenuItem mntmSelectAllPopup = new JMenuItem("Select All");
+		mntmSelectAll.setAccelerator(KeyStroke.getKeyStroke('A', Toolkit
+				.getDefaultToolkit().getMenuShortcutKeyMask()));
+		mntmSelectAllPopup.addActionListener(selectAll);
+		popupMenu.add(mntmSelectAllPopup);
 
 		JMenuItem mntmTimeDate = new JMenuItem("Time/Date");
 		mntmTimeDate.setAccelerator(KeyStroke.getKeyStroke("F5"));
 		mntmTimeDate.addActionListener(timeDate);
 		mnEdit.add(mntmTimeDate);
+	// Clone for JPopupMenu
+		JMenuItem mntmTimeDatePopup = new JMenuItem("Time/Date");
+		mntmTimeDatePopup.setAccelerator(KeyStroke.getKeyStroke("F5"));
+		mntmTimeDatePopup.addActionListener(timeDate);
+		popupMenu.add(mntmTimeDatePopup);
 
 		/*
 		 *  Format Menu & Menu Items
@@ -324,6 +413,7 @@ final public class FreeEditorFrame extends JFrame implements FreeEditorControls
 		textArea = new JTextArea();
 		textArea.setFont(new Font("Lucida Console", Font.PLAIN, 14));
 		textArea.setMargin(new Insets(2, 2, 0, 0));
+		textArea.setComponentPopupMenu(popupMenu);
 		textArea.addCaretListener(caretUpdate);
 		textArea.getDocument().addDocumentListener(documentUpdate);
 		textArea.getDocument().addUndoableEditListener(new UndoableEditListener()
@@ -357,7 +447,7 @@ final public class FreeEditorFrame extends JFrame implements FreeEditorControls
 		updateStatusBar();
 		statusPanel.add(lblStatusBar);
 		getContentPane().add(statusPanel, BorderLayout.SOUTH);
-		
+
 		loadLastFile();
 	}
 
@@ -688,8 +778,7 @@ final public class FreeEditorFrame extends JFrame implements FreeEditorControls
 		if (documentChanged)
 		{
 			FreeEditorSaveChanges saveChangesDialog = new FreeEditorSaveChanges(this);
-			int val = saveChangesDialog.showDialog();
-			switch (val)
+			switch (saveChangesDialog.showDialog())
 			{
 			case FreeEditorSaveChanges.DONT_SAVE:
 				writeLastFile();
@@ -711,13 +800,13 @@ final public class FreeEditorFrame extends JFrame implements FreeEditorControls
 	@Override
 	public void undo()
 	{
-		
+
 	}
 
 	@Override
 	public void redo()
 	{
-		
+
 	}
 
 	@Override
@@ -747,19 +836,19 @@ final public class FreeEditorFrame extends JFrame implements FreeEditorControls
 	@Override
 	public void find()
 	{
-		
+
 	}
 
 	@Override
 	public void findNext()
 	{
-		
+
 	}
 
 	@Override
 	public void replace()
 	{
-		
+
 	}
 
 	@Override
@@ -794,7 +883,7 @@ final public class FreeEditorFrame extends JFrame implements FreeEditorControls
 	@Override
 	public void timeDate()
 	{
-		
+
 		Date date = new Date();
 		textArea.insert(date.toString(), textArea.getCaretPosition());
 	}
@@ -1060,6 +1149,10 @@ final public class FreeEditorFrame extends JFrame implements FreeEditorControls
 		mntmCut.setEnabled(enabled);
 		mntmCopy.setEnabled(enabled);
 		mntmDelete.setEnabled(enabled);
+		
+		mntmCutPopup.setEnabled(enabled);
+		mntmCopyPopup.setEnabled(enabled);
+		mntmDeletePopup.setEnabled(enabled);
 	}
 
 	private void documentUpdateSetEnabled(boolean enabled)
@@ -1067,6 +1160,9 @@ final public class FreeEditorFrame extends JFrame implements FreeEditorControls
 		mntmSave.setEnabled(enabled);
 		mntmUndo.setEnabled(enabled);
 		mntmRedo.setEnabled(enabled);
+		
+		mntmUndoPopup.setEnabled(enabled);
+		mntmRedoPopup.setEnabled(enabled);
 	}
 
 	private void documentEmptySetEnabled(boolean enabled)
@@ -1074,8 +1170,12 @@ final public class FreeEditorFrame extends JFrame implements FreeEditorControls
 		mntmFind.setEnabled(enabled);
 		mntmFindNext.setEnabled(enabled);
 		mntmReplace.setEnabled(enabled);
+		
+		mntmFindPopup.setEnabled(enabled);
+		mntmFindNextPopup.setEnabled(enabled);
+		mntmReplacePopup.setEnabled(enabled);
 	}
-	
+
 	private void printStuff()
 	{
 		System.out.println("currentFile: " + currentFile);
@@ -1085,7 +1185,7 @@ final public class FreeEditorFrame extends JFrame implements FreeEditorControls
 		System.out.println("documentTextSelected: " + documentTextSelected);
 		System.out.println();
 	}
-	
+
 	public String getCurrentFile()
 	{
 		return currentFile.getName();

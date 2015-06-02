@@ -48,11 +48,10 @@ public class FreeEditorSaveChanges extends JDialog implements ActionListener
 		
 	private void init()
 	{
-
 		setTitle("FreeEditor");
+		setModal(true);
 		setBounds(100, 100, 350, 150);
 		setLocationRelativeTo(null);
-		setModal(true);
 		getContentPane().setLayout(null);
 		addWindowListener(new WindowAdapter()
 		{

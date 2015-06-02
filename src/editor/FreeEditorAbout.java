@@ -34,13 +34,15 @@ public class FreeEditorAbout extends JDialog
 	private void init()
 	{
 		setTitle("FreeEditor - About");
-		setBounds(100, 100, 301, 250);
+		setModal(true);
+		setBounds(100, 100, 330, 250);
 		setLocationRelativeTo(null);
 		setResizable(false);
+		System.out.println(getContentPane().getLayout());
 		getContentPane().setLayout(null);
 		
 		JPanel panel = new JPanel();
-		panel.setBounds(0, 0, 295, 50);
+		panel.setBounds(0, 0, 344, 50);
 		getContentPane().add(panel);
 		panel.setLayout(new BorderLayout(0, 0));
 		
@@ -54,9 +56,9 @@ public class FreeEditorAbout extends JDialog
 		JTextArea body = new JTextArea();
 		body.setForeground(SystemColor.windowBorder);
 		body.setFont(new Font("Open Sans", Font.PLAIN, 12));
-		body.setText("\nFreeEditor is a small text editor project. This project started May 29th 2015 and version 1.0 was completed /insert here/.\r\n\r\nA special thank you to\r\nMs. Ann Hamilton, the StackOverFlow community, java2s.com and MS Notepad.");
+		body.setText("\nFreeEditor is a small text editor project. This project started May 29th 2015 and version 1.0 was completed /insert here/.\r\n\r\nA special thank you to\r\nMs. Ann Hamilton, the StackOverFlow community, RXTextUtilities.java, java2s.com and MS Notepad.");
 		body.setEditable(false);
-		body.setBounds(10, 50, 275, 161);
+		body.setBounds(10, 50, 304, 161);
 		body.setLineWrap(true);
 		body.setWrapStyleWord(true);
 		getContentPane().add(body);

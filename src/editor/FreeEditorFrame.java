@@ -352,7 +352,7 @@ final public class FreeEditorFrame extends JFrame implements FreeEditorControls
 				.getDefaultToolkit().getMenuShortcutKeyMask()));
 		mntmSelectAll.addActionListener(selectAll);
 		mnEdit.add(mntmSelectAll);
-	// Clone for JPopupMenu
+		// Clone for JPopupMenu
 		JMenuItem mntmSelectAllPopup = new JMenuItem("Select All");
 		mntmSelectAll.setAccelerator(KeyStroke.getKeyStroke('A', Toolkit
 				.getDefaultToolkit().getMenuShortcutKeyMask()));
@@ -363,7 +363,7 @@ final public class FreeEditorFrame extends JFrame implements FreeEditorControls
 		mntmTimeDate.setAccelerator(KeyStroke.getKeyStroke("F5"));
 		mntmTimeDate.addActionListener(timeDate);
 		mnEdit.add(mntmTimeDate);
-	// Clone for JPopupMenu
+		// Clone for JPopupMenu
 		JMenuItem mntmTimeDatePopup = new JMenuItem("Time/Date");
 		mntmTimeDatePopup.setAccelerator(KeyStroke.getKeyStroke("F5"));
 		mntmTimeDatePopup.addActionListener(timeDate);
@@ -992,7 +992,6 @@ final public class FreeEditorFrame extends JFrame implements FreeEditorControls
 	private void loadLastFile()
 	{
 		Scanner r = null;
-
 		try
 		{
 			r = new Scanner(LAST_FILE);
@@ -1149,7 +1148,7 @@ final public class FreeEditorFrame extends JFrame implements FreeEditorControls
 		mntmCut.setEnabled(enabled);
 		mntmCopy.setEnabled(enabled);
 		mntmDelete.setEnabled(enabled);
-		
+
 		mntmCutPopup.setEnabled(enabled);
 		mntmCopyPopup.setEnabled(enabled);
 		mntmDeletePopup.setEnabled(enabled);
@@ -1160,7 +1159,7 @@ final public class FreeEditorFrame extends JFrame implements FreeEditorControls
 		mntmSave.setEnabled(enabled);
 		mntmUndo.setEnabled(enabled);
 		mntmRedo.setEnabled(enabled);
-		
+
 		mntmUndoPopup.setEnabled(enabled);
 		mntmRedoPopup.setEnabled(enabled);
 	}
@@ -1170,7 +1169,7 @@ final public class FreeEditorFrame extends JFrame implements FreeEditorControls
 		mntmFind.setEnabled(enabled);
 		mntmFindNext.setEnabled(enabled);
 		mntmReplace.setEnabled(enabled);
-		
+
 		mntmFindPopup.setEnabled(enabled);
 		mntmFindNextPopup.setEnabled(enabled);
 		mntmReplacePopup.setEnabled(enabled);

@@ -30,7 +30,7 @@ public class FreeEditorAbout extends JDialog
 		init();
 		setLocationRelativeTo(c);
 	}
-	
+
 	private void init()
 	{
 		setTitle("FreeEditor - About");
@@ -40,19 +40,19 @@ public class FreeEditorAbout extends JDialog
 		setResizable(false);
 		System.out.println(getContentPane().getLayout());
 		getContentPane().setLayout(null);
-		
+
 		JPanel panel = new JPanel();
 		panel.setBounds(0, 0, 344, 50);
 		getContentPane().add(panel);
 		panel.setLayout(new BorderLayout(0, 0));
-		
+
 		JLabel lblAboutFreeeditor = new JLabel("About FreeEditor");
 		lblAboutFreeeditor.setForeground(SystemColor.controlDkShadow);
 		lblAboutFreeeditor.setFont(new Font("Open Sans", Font.PLAIN, 21));
 		lblAboutFreeeditor.setBackground(SystemColor.activeCaptionBorder);
 		lblAboutFreeeditor.setHorizontalAlignment(SwingConstants.CENTER);
 		panel.add(lblAboutFreeeditor, BorderLayout.CENTER);
-		
+
 		JTextArea body = new JTextArea();
 		body.setForeground(SystemColor.windowBorder);
 		body.setFont(new Font("Open Sans", Font.PLAIN, 12));

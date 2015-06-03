@@ -1,8 +1,8 @@
 package editor;
+
 /************************************************************
  * Copyright 2004-2005,2007-2008 Masahiko SAWAI All Rights Reserved. 
  ************************************************************/
-
 
 import java.awt.BorderLayout;
 import java.awt.Component;

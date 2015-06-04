@@ -1,18 +1,27 @@
 package editor;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.JCheckBox;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 
 @SuppressWarnings("serial")
-public class FreeEditorFind extends JDialog
+public class FreeEditorFind extends JDialog implements ActionListener
 {
-	private JTextField textField;
-	private JTextField textField_1;
+	private int lineNumber = 1;
+
+	private JTextField fldFindWhat;
+	private JTextField fldReplaceWith;
+
+	private JButton btnFindNext;
+	private JButton btnReplace;
+	private JButton btnReplaceAll;
+	private JCheckBox chckbxMatchCase;
+	private JButton btnCancel;
 
 	/**
 	 * Launch the application.
@@ -36,9 +45,21 @@ public class FreeEditorFind extends JDialog
 	 */
 	public FreeEditorFind()
 	{
+		init();
+	}
+
+	public FreeEditorFind(FreeEditorFrame frame)
+	{
+		init();
+		setLocationRelativeTo(frame);
+	}
+
+	public void init()
+	{
 		setTitle("Find");
 		setModal(true);
 		setBounds(100, 100, 350, 157);
+		setLocationRelativeTo(null);
 		getContentPane().setLayout(null);
 
 		JLabel lblFindWhat = new JLabel("Find what:");
@@ -49,34 +70,75 @@ public class FreeEditorFind extends JDialog
 		lblReplaceWith.setBounds(10, 45, 80, 14);
 		getContentPane().add(lblReplaceWith);
 
-		textField = new JTextField();
-		textField.setBounds(92, 11, 119, 20);
-		getContentPane().add(textField);
-		textField.setColumns(10);
+		fldFindWhat = new JTextField();
+		fldFindWhat.setBounds(92, 11, 119, 20);
+		getContentPane().add(fldFindWhat);
+		fldFindWhat.setColumns(10);
 
-		textField_1 = new JTextField();
-		textField_1.setBounds(92, 42, 119, 20);
-		getContentPane().add(textField_1);
-		textField_1.setColumns(10);
+		fldReplaceWith = new JTextField();
+		fldReplaceWith.setBounds(92, 42, 119, 20);
+		getContentPane().add(fldReplaceWith);
+		fldReplaceWith.setColumns(10);
 
-		JButton btnNewButton = new JButton("Find Next");
-		btnNewButton.setBounds(221, 5, 103, 23);
-		getContentPane().add(btnNewButton);
+		btnFindNext = new JButton("Find Next");
+		btnFindNext.setBounds(221, 5, 103, 23);
+		btnFindNext.addActionListener(this);
+		getContentPane().add(btnFindNext);
 
-		JButton btnNewButton_1 = new JButton("Replace");
-		btnNewButton_1.setBounds(221, 33, 103, 23);
-		getContentPane().add(btnNewButton_1);
+		btnReplace = new JButton("Replace");
+		btnReplace.setBounds(221, 33, 103, 23);
+		btnReplace.addActionListener(this);
+		getContentPane().add(btnReplace);
 
-		JButton btnNewButton_2 = new JButton("Replace All");
-		btnNewButton_2.setBounds(221, 61, 103, 23);
-		getContentPane().add(btnNewButton_2);
+		btnReplaceAll = new JButton("Replace All");
+		btnReplaceAll.setBounds(221, 61, 103, 23);
+		btnReplaceAll.addActionListener(this);
+		getContentPane().add(btnReplaceAll);
 
-		JButton btnNewButton_3 = new JButton("Cancel");
-		btnNewButton_3.setBounds(221, 89, 103, 23);
-		getContentPane().add(btnNewButton_3);
-
-		JCheckBox chckbxMatchCase = new JCheckBox("Match case");
+		chckbxMatchCase = new JCheckBox("Match case");
 		chckbxMatchCase.setBounds(10, 85, 97, 23);
 		getContentPane().add(chckbxMatchCase);
+
+		btnCancel = new JButton("Cancel");
+		btnCancel.setBounds(221, 89, 103, 23);
+		btnCancel.addActionListener(this);
+		getContentPane().add(btnCancel);
+	}
+
+	public int showDialog()
+	{
+		setVisible(true);
+		return lineNumber;
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e)
+	{
+		Object src = e.getSource();
+		if (src.equals(btnFindNext))
+		{
+			exit();
+		}
+		else
+			if (src.equals(btnReplace))
+			{
+				exit();
+			}
+			else
+				if (src.equals(btnReplaceAll))
+				{
+					exit();
+				}
+				else
+					if (src.equals(btnCancel))
+					{
+						exit();
+					}
+	}
+	
+	private void exit()
+	{
+		setVisible(false);
+		dispose();
 	}
 }

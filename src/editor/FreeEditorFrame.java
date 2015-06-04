@@ -836,41 +836,38 @@ final public class FreeEditorFrame extends JFrame implements FreeEditorControls
 	@Override
 	public void find()
 	{
-
+		FreeEditorFind findDialog = new FreeEditorFind(this);
+		findDialog.showDialog();
 	}
 
 	@Override
 	public void findNext()
 	{
-
+		FreeEditorFind findDialog = new FreeEditorFind(this);
+		findDialog.setTitle("Find Next");
+		findDialog.showDialog();
 	}
 
 	@Override
 	public void replace()
 	{
-
+		FreeEditorFind findDialog = new FreeEditorFind(this);
+		findDialog.setTitle("Replace");
+		findDialog.showDialog();
 	}
 
 	@Override
 	public void goTo()
 	{
-		String returnVal = (String) JOptionPane.showInputDialog(this,
-				"Line Number:", "Go To Line", JOptionPane.PLAIN_MESSAGE, null, null, 1);
-		if (returnVal != null)
+		try
 		{
-			try
-			{
-				int line = Integer.parseInt(returnVal);
-				Element root = textArea.getDocument().getDefaultRootElement();
-				line = Math.max(line, 1);
-				line = Math.min(line, root.getElementCount());
-				int startOfLineOffset = root.getElement(line - 1).getStartOffset();
-				textArea.setCaretPosition(startOfLineOffset);
-			}
-			catch (NumberFormatException nfe)
-			{
-				System.err.println("Error: goTo() - line number must be an integer.");
-			}
+			int returnVal = Integer.parseInt((String) JOptionPane.showInputDialog(this,
+					"Line Number:", "Go To Line", JOptionPane.PLAIN_MESSAGE, null, null, 1));
+			setCaretToLine(returnVal);
+		}
+		catch (NumberFormatException nfe)
+		{
+			System.err.println("Error: goTo() - line number must be an integer.");
 		}
 	}
 
@@ -1141,6 +1138,15 @@ final public class FreeEditorFrame extends JFrame implements FreeEditorControls
 			documentTextSelected = false;
 			textSelectedSetEnabled(false);
 		}
+	}
+	
+	private void setCaretToLine(int line)
+	{
+		Element root = textArea.getDocument().getDefaultRootElement();
+		line = Math.max(line, 1);
+		line = Math.min(line, root.getElementCount());
+		int startOfLineOffset = root.getElement(line - 1).getStartOffset();
+		textArea.setCaretPosition(startOfLineOffset);
 	}
 
 	private void textSelectedSetEnabled(boolean enabled)

@@ -11,3 +11,4 @@ A small text editor project. Download the FreeEditor.jar file to try it out!
 - find
 - findNext
 - replace
+- write help files

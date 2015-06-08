@@ -3,16 +3,20 @@ package editor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.JCheckBox;
+import javax.swing.JRadioButton;
 
 @SuppressWarnings("serial")
 public class FreeEditorFind extends JDialog implements ActionListener
 {
+	private FreeEditorFrame editor;
 	private int lineNumber = 1;
+	private int colNumber = 1;
 
 	private JTextField fldFindWhat;
 	private JTextField fldReplaceWith;
@@ -22,6 +26,9 @@ public class FreeEditorFind extends JDialog implements ActionListener
 	private JButton btnReplaceAll;
 	private JCheckBox chckbxMatchCase;
 	private JButton btnCancel;
+	
+	private JRadioButton rdbtnUp;
+	private JRadioButton rdbtnDown;
 
 	/**
 	 * Launch the application.
@@ -48,16 +55,16 @@ public class FreeEditorFind extends JDialog implements ActionListener
 		init();
 	}
 
-	public FreeEditorFind(FreeEditorFrame frame)
+	public FreeEditorFind(FreeEditorFrame f)
 	{
 		init();
-		setLocationRelativeTo(frame);
+		editor = f;
+		setLocationRelativeTo(editor);
 	}
 
 	public void init()
 	{
 		setTitle("Find");
-		setModal(true);
 		setBounds(100, 100, 350, 157);
 		setLocationRelativeTo(null);
 		getContentPane().setLayout(null);
@@ -95,20 +102,41 @@ public class FreeEditorFind extends JDialog implements ActionListener
 		btnReplaceAll.addActionListener(this);
 		getContentPane().add(btnReplaceAll);
 
-		chckbxMatchCase = new JCheckBox("Match case");
-		chckbxMatchCase.setBounds(10, 85, 97, 23);
-		getContentPane().add(chckbxMatchCase);
-
 		btnCancel = new JButton("Cancel");
 		btnCancel.setBounds(221, 89, 103, 23);
 		btnCancel.addActionListener(this);
 		getContentPane().add(btnCancel);
+		
+		chckbxMatchCase = new JCheckBox("Match case");
+		chckbxMatchCase.setBounds(6, 89, 97, 23);
+		getContentPane().add(chckbxMatchCase);
+		
+		ButtonGroup btnGroup = new ButtonGroup();
+		rdbtnUp = new JRadioButton("Up");
+		rdbtnUp.setBounds(156, 69, 65, 23);
+		getContentPane().add(rdbtnUp);
+		btnGroup.add(rdbtnUp);
+		
+		rdbtnDown = new JRadioButton("Down");
+		rdbtnDown.setBounds(156, 89, 65, 23);
+		rdbtnDown.setSelected(true);
+		getContentPane().add(rdbtnDown);
+		btnGroup.add(rdbtnDown);
 	}
 
-	public int showDialog()
+	public void showDialog()
 	{
 		setVisible(true);
-		return lineNumber;
+	}
+	
+	public void setFindWhat(String text)
+	{
+		fldFindWhat.setText(text);
+	}
+	
+	public void setReplaceWith(String text)
+	{
+		fldReplaceWith.setText(text);
 	}
 
 	@Override
@@ -117,7 +145,11 @@ public class FreeEditorFind extends JDialog implements ActionListener
 		Object src = e.getSource();
 		if (src.equals(btnFindNext))
 		{
-			exit();
+			String text = fldFindWhat.getText();
+			if (!text.isEmpty())
+			{
+				findNext(text);
+			}
 		}
 		else
 			if (src.equals(btnReplace))
@@ -134,6 +166,21 @@ public class FreeEditorFind extends JDialog implements ActionListener
 					{
 						exit();
 					}
+	}
+	
+	private int findNext(String text)
+	{
+		return 0;
+	}
+	
+	private int replace()
+	{
+		return 0;
+	}
+	
+	private int replaceAll()
+	{
+		return 0;
 	}
 	
 	private void exit()

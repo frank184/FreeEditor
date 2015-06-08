@@ -31,6 +31,7 @@ import javax.swing.event.DocumentListener;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
 import javax.swing.text.Element;
+import javax.swing.undo.UndoManager;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -63,9 +64,11 @@ final public class FreeEditorFrame extends JFrame implements FreeEditorControls
 	private boolean documentTextSelected;
 	private boolean documentChanged;
 	private boolean documentEmpty;
-
+	
 	private int lineNumber = 1;
 	private int columnNumber = 1;
+	
+	private UndoManager undoManager;
 
 	/*
 	 *  Global Components
@@ -81,9 +84,7 @@ final public class FreeEditorFrame extends JFrame implements FreeEditorControls
 
 	// Edit
 	private JMenuItem mntmUndo;
-	private JMenuItem mntmUndoPopup;
 	private JMenuItem mntmRedo;
-	private JMenuItem mntmRedoPopup;
 	private JMenuItem mntmCut;
 	private JMenuItem mntmCutPopup;
 	private JMenuItem mntmCopy;
@@ -212,13 +213,6 @@ final public class FreeEditorFrame extends JFrame implements FreeEditorControls
 				.getDefaultToolkit().getMenuShortcutKeyMask()));
 		mntmUndo.addActionListener(undo);
 		mnEdit.add(mntmUndo);
-		// Clone for JPopupMenu
-		mntmUndoPopup = new JMenuItem("Undo");
-		mntmUndoPopup.setEnabled(false);
-		mntmUndoPopup.setAccelerator(KeyStroke.getKeyStroke('Z', Toolkit
-				.getDefaultToolkit().getMenuShortcutKeyMask()));
-		mntmUndoPopup.addActionListener(undo);
-		popupMenu.add(mntmUndoPopup);
 
 		mntmRedo = new JMenuItem("Redo");
 		mntmRedo.setEnabled(false);
@@ -226,16 +220,8 @@ final public class FreeEditorFrame extends JFrame implements FreeEditorControls
 				.getDefaultToolkit().getMenuShortcutKeyMask()));
 		mntmRedo.addActionListener(redo);
 		mnEdit.add(mntmRedo);
-		// Clone for JPopupMenu
-		mntmRedoPopup = new JMenuItem("Redo");
-		mntmRedoPopup.setEnabled(false);
-		mntmRedoPopup.setAccelerator(KeyStroke.getKeyStroke('Y', Toolkit
-				.getDefaultToolkit().getMenuShortcutKeyMask()));
-		mntmRedoPopup.addActionListener(redo);
-		popupMenu.add(mntmRedoPopup);
 
 		mnEdit.add(new JSeparator());
-		popupMenu.add(new JSeparator());
 
 		mntmCut = new JMenuItem("Cut");
 		mntmCut.setEnabled(false);
@@ -415,16 +401,7 @@ final public class FreeEditorFrame extends JFrame implements FreeEditorControls
 		textArea.setMargin(new Insets(2, 2, 0, 0));
 		textArea.setComponentPopupMenu(popupMenu);
 		textArea.addCaretListener(caretUpdate);
-		textArea.getDocument().addDocumentListener(documentUpdate);
-		textArea.getDocument().addUndoableEditListener(new UndoableEditListener()
-		{
-
-			@Override
-			public void undoableEditHappened(UndoableEditEvent e)
-			{
-
-			}
-		});
+		setDocumentListener();
 
 		/*
 		 * JScrollPane
@@ -447,7 +424,8 @@ final public class FreeEditorFrame extends JFrame implements FreeEditorControls
 		updateStatusBar();
 		statusPanel.add(lblStatusBar);
 		getContentPane().add(statusPanel, BorderLayout.SOUTH);
-
+		
+		undoManager = new UndoManager();
 		loadLastFile();
 	}
 
@@ -460,6 +438,15 @@ final public class FreeEditorFrame extends JFrame implements FreeEditorControls
 		public void windowClosing(WindowEvent e)
 		{
 			exit();
+		}
+	};
+	
+	private UndoableEditListener undoableEdit = new UndoableEditListener()
+	{
+		@Override
+		public void undoableEditHappened(UndoableEditEvent e)
+		{
+			undoManager.addEdit(e.getEdit());
 		}
 	};
 
@@ -800,13 +787,17 @@ final public class FreeEditorFrame extends JFrame implements FreeEditorControls
 	@Override
 	public void undo()
 	{
-
+		undoManager.undo();
+		if (!undoManager.canUndo())
+		{
+			setDocumentChanged(false);
+		}
 	}
 
 	@Override
 	public void redo()
 	{
-
+		undoManager.redo();
 	}
 
 	@Override
@@ -837,6 +828,11 @@ final public class FreeEditorFrame extends JFrame implements FreeEditorControls
 	public void find()
 	{
 		FreeEditorFind findDialog = new FreeEditorFind(this);
+		findDialog.setTitle("Find");
+		if (documentTextSelected)
+		{
+			findDialog.setFindWhat(textArea.getSelectedText());
+		}
 		findDialog.showDialog();
 	}
 
@@ -845,6 +841,10 @@ final public class FreeEditorFrame extends JFrame implements FreeEditorControls
 	{
 		FreeEditorFind findDialog = new FreeEditorFind(this);
 		findDialog.setTitle("Find Next");
+		if (documentTextSelected)
+		{
+			findDialog.setFindWhat(textArea.getSelectedText());
+		}
 		findDialog.showDialog();
 	}
 
@@ -853,6 +853,10 @@ final public class FreeEditorFrame extends JFrame implements FreeEditorControls
 	{
 		FreeEditorFind findDialog = new FreeEditorFind(this);
 		findDialog.setTitle("Replace");
+		if (documentTextSelected)
+		{
+			findDialog.setReplaceWith(textArea.getSelectedText());
+		}
 		findDialog.showDialog();
 	}
 
@@ -1099,6 +1103,7 @@ final public class FreeEditorFrame extends JFrame implements FreeEditorControls
 	private void setDocumentListener()
 	{
 		textArea.getDocument().addDocumentListener(documentUpdate);
+		textArea.getDocument().addUndoableEditListener(undoableEdit);
 	}
 
 	private void setDocumentChanged(boolean enabled)
@@ -1146,7 +1151,14 @@ final public class FreeEditorFrame extends JFrame implements FreeEditorControls
 		line = Math.max(line, 1);
 		line = Math.min(line, root.getElementCount());
 		int startOfLineOffset = root.getElement(line - 1).getStartOffset();
-		textArea.setCaretPosition(startOfLineOffset);
+		try
+		{
+			textArea.setCaretPosition(startOfLineOffset);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
 	}
 
 	private void textSelectedSetEnabled(boolean enabled)
@@ -1165,9 +1177,6 @@ final public class FreeEditorFrame extends JFrame implements FreeEditorControls
 		mntmSave.setEnabled(enabled);
 		mntmUndo.setEnabled(enabled);
 		mntmRedo.setEnabled(enabled);
-
-		mntmUndoPopup.setEnabled(enabled);
-		mntmRedoPopup.setEnabled(enabled);
 	}
 
 	private void documentEmptySetEnabled(boolean enabled)
@@ -1194,5 +1203,10 @@ final public class FreeEditorFrame extends JFrame implements FreeEditorControls
 	public String getCurrentFile()
 	{
 		return currentFile.getName();
+	}
+	
+	public String getText()
+	{
+		return textArea.getText();
 	}
 } // FreeEditorFrame class

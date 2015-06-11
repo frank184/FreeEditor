@@ -6,5 +6,4 @@ A small text editor project. Download the FreeEditor.jar file to try it out!
 - pageSetup
 - print
 - replace
-- replaceAll
 - write help files

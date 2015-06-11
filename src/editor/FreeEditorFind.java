@@ -2,21 +2,30 @@ package editor;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JCheckBox;
 import javax.swing.JRadioButton;
+import javax.swing.text.BadLocationException;
 
 @SuppressWarnings("serial")
-public class FreeEditorFind extends JDialog implements ActionListener
+public class FreeEditorFind extends JDialog implements ActionListener,
+		ItemListener
 {
-	private FreeEditorFrame editor;
-	private int lineNumber = 1;
-	private int colNumber = 1;
+	private boolean direction;
+	
+	/*
+	 * Global Components
+	 */
+	private JTextArea textArea;
 
 	private JTextField fldFindWhat;
 	private JTextField fldReplaceWith;
@@ -26,40 +35,18 @@ public class FreeEditorFind extends JDialog implements ActionListener
 	private JButton btnReplaceAll;
 	private JCheckBox chckbxMatchCase;
 	private JButton btnCancel;
-	
+
 	private JRadioButton rdbtnUp;
 	private JRadioButton rdbtnDown;
 
 	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args)
-	{
-		try
-		{
-			FreeEditorFind dialog = new FreeEditorFind();
-			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-			dialog.setVisible(true);
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
-	}
-
-	/**
 	 * Create the dialog.
 	 */
-	public FreeEditorFind()
+	public FreeEditorFind(FreeEditorFrame editor)
 	{
 		init();
-	}
-
-	public FreeEditorFind(FreeEditorFrame f)
-	{
-		init();
-		editor = f;
 		setLocationRelativeTo(editor);
+		textArea = editor.getTextArea();
 	}
 
 	public void init()
@@ -106,37 +93,54 @@ public class FreeEditorFind extends JDialog implements ActionListener
 		btnCancel.setBounds(221, 89, 103, 23);
 		btnCancel.addActionListener(this);
 		getContentPane().add(btnCancel);
-		
+
 		chckbxMatchCase = new JCheckBox("Match case");
 		chckbxMatchCase.setBounds(6, 89, 97, 23);
 		getContentPane().add(chckbxMatchCase);
-		
+
 		ButtonGroup btnGroup = new ButtonGroup();
 		rdbtnUp = new JRadioButton("Up");
 		rdbtnUp.setBounds(156, 69, 65, 23);
+		rdbtnUp.addItemListener(this);
 		getContentPane().add(rdbtnUp);
 		btnGroup.add(rdbtnUp);
-		
+
 		rdbtnDown = new JRadioButton("Down");
 		rdbtnDown.setBounds(156, 89, 65, 23);
 		rdbtnDown.setSelected(true);
+		rdbtnUp.addItemListener(this);
 		getContentPane().add(rdbtnDown);
 		btnGroup.add(rdbtnDown);
+		
+		direction = false;
 	}
 
 	public void showDialog()
 	{
 		setVisible(true);
 	}
-	
+
 	public void setFindWhat(String text)
 	{
 		fldFindWhat.setText(text);
 	}
-	
+
 	public void setReplaceWith(String text)
 	{
 		fldReplaceWith.setText(text);
+	}
+
+	@Override
+	public void itemStateChanged(ItemEvent e)
+	{
+		if (e.getStateChange() == 1 && e.getSource().equals(rdbtnUp))
+		{
+			direction = true;
+		}
+		else
+		{
+			direction = false;
+		}
 	}
 
 	@Override
@@ -145,21 +149,17 @@ public class FreeEditorFind extends JDialog implements ActionListener
 		Object src = e.getSource();
 		if (src.equals(btnFindNext))
 		{
-			String text = fldFindWhat.getText();
-			if (!text.isEmpty())
-			{
-				findNext(text);
-			}
+			findNext();
 		}
 		else
 			if (src.equals(btnReplace))
 			{
-				exit();
+				replace();
 			}
 			else
 				if (src.equals(btnReplaceAll))
 				{
-					exit();
+					replaceAll();
 				}
 				else
 					if (src.equals(btnCancel))
@@ -167,25 +167,140 @@ public class FreeEditorFind extends JDialog implements ActionListener
 						exit();
 					}
 	}
-	
-	private int findNext(String text)
+
+	protected void findNext()
 	{
-		return 0;
+		String findWhat = fldFindWhat.getText();
+		if (!findWhat.toString().isEmpty())
+		{
+			int index = find(findWhat);
+			if (index != -1)
+			{
+				int selectionStart = index;
+				if (!direction)
+					selectionStart += textArea.getCaretPosition();
+				int selectionEnd =  selectionStart + findWhat.length();
+				highlight(selectionStart, selectionEnd);
+			}
+			else
+			{
+				notFoundMessage(findWhat.toString());
+			}
+		}
+	}
+
+	private void replace()
+	{
+		if (!fldFindWhat.getText().isEmpty()
+				&& !fldReplaceWith.getText().isEmpty())
+		{
+			if (!fldFindWhat.getText().isEmpty()
+					&& !fldReplaceWith.getText().isEmpty())
+			{
+				
+			}
+		}
+	}
+
+	private void replaceAll()
+	{
+		
 	}
 	
-	private int replace()
+	private int find(String text)
 	{
-		return 0;
+		int index = -1;
+		if (chckbxMatchCase.isSelected())
+		{
+			if (direction)
+			{
+				index = getTextUp().lastIndexOf(text);
+			}
+			else
+			{
+				index = getTextDown().indexOf(text);
+			}
+		}
+		else
+		{
+			if (direction)
+			{
+				index = getTextUp().toLowerCase().lastIndexOf(text.toLowerCase());
+			}
+			else
+			{
+				index = getTextDown().toLowerCase().indexOf(text.toLowerCase());
+			}
+		}
+		return index;
 	}
 	
-	private int replaceAll()
+	private String getTextUp()
 	{
-		return 0;
+		String text = new String();
+		int position = textArea.getCaretPosition();
+		if (position != 0)
+		{
+			try
+			{
+				int start = 0;
+				int length = position;
+				if (textArea.getSelectedText() != null)
+				{
+					length = textArea.getSelectionStart();
+				}
+				text = textArea.getText(start, length);
+			}
+			catch (BadLocationException e)
+			{
+				e.printStackTrace();
+			}
+		}
+		System.out.println(text);
+		return text;
+	}
+
+	private String getTextDown()
+	{
+		String text = new String();
+		int position = textArea.getCaretPosition();
+		if (position != textArea.getDocument().getLength())
+		{
+			try
+			{
+				int start = position;
+				int length = textArea.getDocument().getLength() - position;
+				text = textArea.getText(start , length);
+			}
+			catch (BadLocationException e)
+			{
+				e.printStackTrace();
+			}
+		}
+		System.out.println(text);
+		return text;
+	}
+	
+	private void highlight(int selectionStart, int selectionEnd)
+	{
+		textArea.setSelectionStart(selectionStart);
+		textArea.setSelectionEnd(selectionEnd);
+	}
+	
+	private void notFoundMessage(String find)
+	{
+		JOptionPane.showMessageDialog(this, "Cannot find \"" + find + "\"",
+				"FreeEditor", JOptionPane.INFORMATION_MESSAGE);
 	}
 	
 	private void exit()
 	{
 		setVisible(false);
 		dispose();
+	}
+	
+	public String getFindWhat()
+	{
+		return fldFindWhat.getText();
 	}
 }

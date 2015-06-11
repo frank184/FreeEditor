@@ -73,6 +73,7 @@ final public class FreeEditorFrame extends JFrame implements FreeEditorControls
 	/*
 	 *  Global Components
 	 */
+	private FreeEditorFind findDialog;
 	private JTextArea textArea;
 	private JScrollPane jsp;
 	private JPanel statusPanel;
@@ -425,6 +426,7 @@ final public class FreeEditorFrame extends JFrame implements FreeEditorControls
 		statusPanel.add(lblStatusBar);
 		getContentPane().add(statusPanel, BorderLayout.SOUTH);
 		
+		findDialog = new FreeEditorFind(this);
 		undoManager = new UndoManager();
 		loadLastFile();
 	}
@@ -712,8 +714,12 @@ final public class FreeEditorFrame extends JFrame implements FreeEditorControls
 	{
 		JFileChooser openDialog = new JFileChooser();
 		openDialog.showOpenDialog(this);
-		currentFile = openDialog.getSelectedFile();
-		openCurrentFile();
+		File selectedFile = openDialog.getSelectedFile();
+		if (selectedFile != null)
+		{
+			currentFile = selectedFile;
+			openCurrentFile();
+		}
 	}
 
 	@Override
@@ -827,37 +833,55 @@ final public class FreeEditorFrame extends JFrame implements FreeEditorControls
 	@Override
 	public void find()
 	{
-		FreeEditorFind findDialog = new FreeEditorFind(this);
-		findDialog.setTitle("Find");
-		if (documentTextSelected)
+		if (!findDialog.isVisible())
 		{
-			findDialog.setFindWhat(textArea.getSelectedText());
+			findDialog.setTitle("Find");
+			if (documentTextSelected)
+			{
+				findDialog.setFindWhat(textArea.getSelectedText());
+			}
+			findDialog.showDialog();
 		}
-		findDialog.showDialog();
+		else
+		{
+			findDialog.toFront();
+		}
 	}
 
 	@Override
 	public void findNext()
 	{
-		FreeEditorFind findDialog = new FreeEditorFind(this);
-		findDialog.setTitle("Find Next");
-		if (documentTextSelected)
+		if (!findDialog.isVisible() && findDialog.getFindWhat().isEmpty())
 		{
-			findDialog.setFindWhat(textArea.getSelectedText());
+			findDialog.setTitle("Find Next");
+			if (documentTextSelected)
+			{
+				findDialog.setFindWhat(textArea.getSelectedText());
+			}
+			findDialog.showDialog();
 		}
-		findDialog.showDialog();
+		else
+		{
+			findDialog.findNext();
+		}
 	}
 
 	@Override
 	public void replace()
 	{
-		FreeEditorFind findDialog = new FreeEditorFind(this);
-		findDialog.setTitle("Replace");
-		if (documentTextSelected)
+		if (!findDialog.isVisible())
 		{
-			findDialog.setReplaceWith(textArea.getSelectedText());
+			findDialog.setTitle("Replace");
+			if (documentTextSelected)
+			{
+				findDialog.setReplaceWith(textArea.getSelectedText());
+			}
+			findDialog.showDialog();
 		}
-		findDialog.showDialog();
+		else
+		{
+			findDialog.toFront();
+		}
 	}
 
 	@Override
@@ -987,6 +1011,7 @@ final public class FreeEditorFrame extends JFrame implements FreeEditorControls
 		currentFileIsDefault = true;
 		setDocumentEmpty();
 		setDocumentChanged(false);
+		setDocumentListener();
 		printStuff();
 	}
 
@@ -1200,13 +1225,13 @@ final public class FreeEditorFrame extends JFrame implements FreeEditorControls
 		System.out.println();
 	}
 
-	public String getCurrentFile()
+	protected String getCurrentFile()
 	{
 		return currentFile.getName();
 	}
 	
-	public String getText()
+	protected JTextArea getTextArea()
 	{
-		return textArea.getText();
+		return textArea;
 	}
 } // FreeEditorFrame class

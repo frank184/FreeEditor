@@ -37,11 +37,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.print.PrinterException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.Date;
 import java.util.Scanner;
 
@@ -758,6 +760,24 @@ final public class FreeEditorFrame extends JFrame implements FreeEditorControls
 	@Override
 	public void print()
 	{
+		 System.out.println(textArea.getText());
+		 try {
+			boolean complete = textArea.print(new MessageFormat(this.getTitle()),
+					 							new MessageFormat("{0}"),
+					 							true, 
+					 							null, 
+					 							null, 
+					 							true);
+			if(complete){
+				System.out.println("Printed the document.");
+			} else {
+				System.out.println("Didn't print the document");
+			}
+		} catch (PrinterException e) {
+			JOptionPane.showMessageDialog(this, "Couldn't print the document", 
+											"Printing error", 
+											JOptionPane.ERROR_MESSAGE);
+		}
 	}
 
 	@Override

@@ -760,29 +760,27 @@ final public class FreeEditorFrame extends JFrame implements FreeEditorControls
 	@Override
 	public void print()
 	{
-		 System.out.println(textArea.getText());
-		 try {
-			boolean complete = textArea.print(new MessageFormat(this.getTitle()),
-					 							new MessageFormat("{0}"),
-					 							true, 
-					 							null, 
-					 							null, 
-					 							true);
-			if(complete){
-				System.out.println("Printed the document.");
-			} else {
-				System.out.println("Didn't print the document");
-			}
-		} catch (PrinterException e) {
-			JOptionPane.showMessageDialog(this, "Couldn't print the document", 
-											"Printing error", 
-											JOptionPane.ERROR_MESSAGE);
+		try 
+		{
+			textArea.print(new MessageFormat(this.getTitle()), new MessageFormat("{0}"), true, null, null, true);
+		}
+		catch (PrinterException e)
+		{
+			JOptionPane.showMessageDialog(this, "Couldn't print the document", "Printing error", JOptionPane.ERROR_MESSAGE);
 		}
 	}
 
 	@Override
 	public void pageSetup()
 	{
+		try 
+		{
+			textArea.print(new MessageFormat(this.getTitle()), new MessageFormat("{0}"), true, null, null, true);
+		}
+		catch (PrinterException e)
+		{
+			JOptionPane.showMessageDialog(this, "Couldn't print the document", "Printing error", JOptionPane.ERROR_MESSAGE);
+		}
 	}
 
 	@Override
@@ -1043,8 +1041,25 @@ final public class FreeEditorFrame extends JFrame implements FreeEditorControls
 			r = new Scanner(LAST_FILE);
 			if (r.hasNextLine())
 			{
-				currentFile = new File(r.nextLine());
-				openCurrentFile();
+				File lastFile = new File(r.nextLine());
+				if (lastFile.exists())
+				{
+					currentFile = lastFile;
+					openCurrentFile();
+				}
+				else
+				{
+					try
+					{
+						FileWriter w = new FileWriter(LAST_FILE);
+						w.write("");
+					}
+					catch (IOException e)
+					{
+						e.printStackTrace();
+					}
+				}
+				
 			}
 			else
 			{

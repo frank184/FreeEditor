@@ -5,6 +5,5 @@ A small text editor project.
 Download the FreeEditor.jar file to try it out!
 
 ## ToDo
-- pageSetup
-- print
 - write help files
+- include help files for jar

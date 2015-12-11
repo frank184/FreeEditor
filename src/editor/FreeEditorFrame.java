@@ -391,7 +391,9 @@ final public class FreeEditorFrame extends JFrame implements FreeEditorControls
 		JMenuItem mntmViewHelp = new JMenuItem("View Help");
 		mntmViewHelp.addActionListener(viewHelp);
 		mnHelp.add(mntmViewHelp);
-
+		
+		mnHelp.add(new JSeparator());
+		
 		JMenuItem mntmAboutFreeEditor = new JMenuItem("About Free Editor");
 		mntmAboutFreeEditor.addActionListener(viewAbout);
 		mnHelp.add(mntmAboutFreeEditor);
